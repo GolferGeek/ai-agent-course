@@ -1,0 +1,88 @@
+# Tech Stack and Project Organization Rules
+
+# Framework and Core Technologies
+- Next.js 14+ with App Router
+- React 18+
+- TypeScript 5+
+- Node.js 18+
+
+# Project Structure
+/src
+  /app                    # Next.js app directory
+    /api                  # API routes and endpoints
+      /[...path]         # Dynamic API route handling
+      /{category}        # API category directories (generic, langchain, etc.)
+        /discovery       # API metadata and discovery
+        /route.ts       # API implementation
+    /pages              # Additional pages (non-API)
+    /playground         # API playground pages
+  /components           # Reusable React components
+  /utils               # Utility functions and helpers
+
+# Code Organization Rules
+- Maximum file size: 300 lines
+- Prefer functional components with hooks
+- Use TypeScript interfaces for prop types
+- Keep components focused and single-responsibility
+- Use CSS modules for styling
+
+# API Structure Rules
+- All APIs must have discovery metadata
+- APIs must be categorized (generic, langchain, etc.)
+- Each API must include:
+  - Metadata (name, description, endpoint)
+  - Parameter definitions
+  - Response structure documentation
+  - Error handling
+
+# Styling Rules
+- Use CSS modules (.module.css)
+- Follow BEM-like naming convention
+- Support both light and dark modes
+- Maintain consistent spacing and colors
+
+# Component Rules
+- Components should be reusable
+- Props should be well-typed
+- Include JSDoc comments for complex components
+- Handle loading and error states
+
+# State Management
+- Use React hooks for local state
+- Prefer useState and useEffect
+- Keep state close to where it's used
+
+# Error Handling
+- Proper error boundaries
+- Consistent error messages
+- Graceful fallbacks
+
+# Documentation
+- Clear component documentation
+- API endpoint documentation
+- Code comments for complex logic
+- Maintain README.md
+
+# Testing (TODO)
+- Unit tests for utilities
+- Component tests
+- API endpoint tests
+- E2E tests for critical flows
+
+# Performance
+- Optimize component re-renders
+- Lazy load where appropriate
+- Minimize bundle size
+- Use proper image optimization
+
+# Accessibility
+- Semantic HTML
+- ARIA labels where needed
+- Keyboard navigation
+- Color contrast compliance
+
+# Security
+- Input validation
+- API rate limiting
+- Proper error handling
+- No sensitive data exposure 
