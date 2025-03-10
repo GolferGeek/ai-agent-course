@@ -1,0 +1,110 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.breadcrumbs {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.breadcrumbs a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error,
+.notFound {
+  text-align: center;
+  padding: 2rem;
+  color: #e00;
+}
+
+.backLink {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.subApis {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #ddd;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.card {
+  padding: 1.5rem;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: #0070f3;
+  transform: translateY(-2px);
+}
+
+.card h4 {
+  margin: 0 0 0.5rem;
+  color: #0070f3;
+}
+
+.card p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .breadcrumbs {
+    background: #2a2a2a;
+  }
+
+  .loading {
+    color: #999;
+  }
+
+  .card {
+    border-color: #333;
+    background: #1a1a1a;
+  }
+
+  .card:hover {
+    border-color: #0070f3;
+  }
+
+  .card p {
+    color: #999;
+  }
+
+  .subApis {
+    border-color: #333;
+  }
+} 

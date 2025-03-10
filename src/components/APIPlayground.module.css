@@ -1,0 +1,258 @@
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.metadata {
+  margin-bottom: 2rem;
+}
+
+.description {
+  color: #666;
+  margin: 0.5rem 0;
+}
+
+.endpoint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.method {
+  padding: 0.25rem 0.5rem;
+  background: #0070f3;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.url {
+  font-family: monospace;
+  color: #666;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.required {
+  color: #e00;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.textarea {
+  min-height: 100px;
+  font-family: monospace;
+}
+
+.fileInput {
+  padding: 0.5rem 0;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  background: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button:hover {
+  background: #0051a2;
+}
+
+.button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.error {
+  padding: 0.75rem;
+  background: #fee;
+  border: 1px solid #e00;
+  border-radius: 4px;
+  color: #e00;
+}
+
+.response {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #ddd;
+}
+
+.responseContent {
+  margin: 1rem 0;
+  font-size: 1rem;
+}
+
+.responseField {
+  display: flex;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.responseLabel {
+  flex: 0 0 120px;
+  font-weight: 500;
+  color: #666;
+}
+
+.responseValue {
+  flex: 1;
+}
+
+.stringValue {
+  color: #0a3069;
+}
+
+.numberValue {
+  color: #1a7f37;
+}
+
+.booleanValue {
+  color: #8250df;
+}
+
+.nullValue {
+  color: #6e7781;
+  font-style: italic;
+}
+
+.arrayValue {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.arrayItem {
+  padding-left: 1rem;
+  border-left: 2px solid #ddd;
+}
+
+.objectValue {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rawResponse {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.rawResponse summary {
+  cursor: pointer;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.rawResponse pre {
+  margin-top: 1rem;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: #1a1a1a;
+  }
+
+  .endpoint {
+    background: #2a2a2a;
+  }
+
+  .url {
+    color: #999;
+  }
+
+  .input,
+  .select,
+  .textarea {
+    background: #2a2a2a;
+    border-color: #444;
+    color: white;
+  }
+
+  .responseField {
+    background: #2a2a2a;
+  }
+
+  .responseLabel {
+    color: #999;
+  }
+
+  .stringValue {
+    color: #79c0ff;
+  }
+
+  .numberValue {
+    color: #56d364;
+  }
+
+  .booleanValue {
+    color: #d2a8ff;
+  }
+
+  .nullValue {
+    color: #8b949e;
+  }
+
+  .arrayItem {
+    border-left-color: #444;
+  }
+
+  .rawResponse {
+    background: #2a2a2a;
+  }
+
+  .rawResponse summary {
+    color: #999;
+  }
+} 
