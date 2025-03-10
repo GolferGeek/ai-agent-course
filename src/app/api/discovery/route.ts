@@ -34,48 +34,43 @@ async function discoverAPIsServer(basePath: string): Promise<APIMetadata[]> {
     const entries = await fs.readdir(basePath, { withFileTypes: true });
     console.log('Found entries:', entries.map(e => e.name));
     
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        // Skip special directories
-        if (entry.name === 'discovery' || entry.name.startsWith('_') || entry.name.startsWith('.')) {
-          continue;
-        }
-        
-        const fullPath = path.join(basePath, entry.name);
-        console.log('Checking directory:', fullPath);
-        
-        // Check if this directory has a route.ts file
-        const routePath = path.join(fullPath, 'route.ts');
-        const hasRoute = await fs.stat(routePath)
-          .then(() => true)
-          .catch(() => false);
+    // First, check if the current directory has metadata
+    const currentMetadataPath = path.join(basePath, 'discovery', 'metadata.ts');
+    const hasCurrentMetadata = await fs.stat(currentMetadataPath)
+      .then(() => true)
+      .catch(() => false);
 
-        if (hasRoute) {
-          console.log('Found route.ts in:', fullPath);
-          // Check for metadata
-          const metadataPath = path.join(fullPath, 'discovery', 'metadata.ts');
-          const hasMetadata = await fs.stat(metadataPath)
-            .then(() => true)
-            .catch(() => false);
-
-          if (hasMetadata) {
-            console.log('Found metadata.ts in:', fullPath);
-            const metadata = await getMetadataFromFile(metadataPath);
-            if (metadata) {
-              // Recursively discover sub-APIs
-              const subApis = await discoverAPIsServer(fullPath);
-              apis.push({
-                ...metadata,
-                subApis: subApis.length > 0 ? subApis : undefined
-              });
-            }
+    if (hasCurrentMetadata) {
+      const metadata = await getMetadataFromFile(currentMetadataPath);
+      if (metadata) {
+        // This directory represents an API category or endpoint
+        const subApis: APIMetadata[] = [];
+        
+        // Process subdirectories
+        for (const entry of entries) {
+          if (entry.isDirectory() && entry.name !== 'discovery' && !entry.name.startsWith('_') && !entry.name.startsWith('.')) {
+            const fullPath = path.join(basePath, entry.name);
+            const discoveredApis = await discoverAPIsServer(fullPath);
+            subApis.push(...discoveredApis);
           }
         }
-
-        // Continue searching subdirectories
-        const subApis = await discoverAPIsServer(fullPath);
+        
         if (subApis.length > 0) {
-          apis.push(...subApis);
+          apis.push({
+            ...metadata,
+            subApis
+          });
+        } else {
+          apis.push(metadata);
+        }
+      }
+    } else {
+      // Process subdirectories if no metadata in current directory
+      for (const entry of entries) {
+        if (entry.isDirectory() && entry.name !== 'discovery' && !entry.name.startsWith('_') && !entry.name.startsWith('.')) {
+          const fullPath = path.join(basePath, entry.name);
+          const discoveredApis = await discoverAPIsServer(fullPath);
+          apis.push(...discoveredApis);
         }
       }
     }
@@ -83,7 +78,6 @@ async function discoverAPIsServer(basePath: string): Promise<APIMetadata[]> {
     console.error(`Error discovering APIs in ${basePath}:`, err);
   }
   
-  console.log('Discovered APIs in', basePath, ':', apis);
   return apis;
 }
 

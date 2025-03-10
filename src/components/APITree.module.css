@@ -1,0 +1,390 @@
+.treeContainer {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  min-height: calc(100vh - 4rem);
+}
+
+.tree {
+  flex: 0 0 300px;
+  padding-right: 1rem;
+  overflow-y: auto;
+  border-right: 1px solid #ddd;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.rootNode h2 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+/* Tree structure styles */
+.treeNode {
+  position: relative;
+}
+
+.nodeChildren {
+  position: relative;
+  margin-left: 1.25rem;
+  padding-left: 1rem;
+  border-left: 1px solid #ddd;
+}
+
+.nodeContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  white-space: nowrap;
+}
+
+.nodeButtons {
+  display: flex;
+  gap: 0.25rem;
+  min-width: 45px;
+}
+
+.button {
+  padding: 0.15rem 0.35rem;
+  border: none;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: monospace;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.button:hover {
+  opacity: 1;
+}
+
+.viewButton {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.viewButton:hover {
+  background: #bbdefb;
+}
+
+.goButton {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.goButton:hover {
+  background: #c8e6c9;
+}
+
+.nodeName {
+  color: #333;
+  user-select: none;
+}
+
+/* Content area styles */
+.contentHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.contentHeader h3 {
+  margin: 0;
+  color: #333;
+}
+
+.breadcrumb {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  text-align: center;
+  padding: 2rem;
+}
+
+.placeholder h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.placeholder p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* API Structure View styles */
+.apiStructure {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.metadataItem {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.metadataItem strong {
+  color: #666;
+  min-width: 100px;
+}
+
+.parameters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.parameter {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.parameterName {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.parameterDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: #666;
+}
+
+.required {
+  color: #e00;
+  margin-left: 0.25rem;
+}
+
+.responses {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.response {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.responseCode {
+  font-weight: 500;
+  min-width: 50px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  text-align: center;
+}
+
+.responseCode[data-code="200"] {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.responseCode[data-code="400"],
+.responseCode[data-code="500"] {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.responseDescription {
+  flex: 1;
+  color: #666;
+}
+
+.responseExample {
+  margin: 0.5rem 0 0 0;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  color: #333;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tree {
+    border-right-color: #333;
+  }
+
+  .nodeChildren {
+    border-left-color: #333;
+  }
+
+  .rootNode h2,
+  .contentHeader h3,
+  .nodeName,
+  .parameterName {
+    color: #fff;
+  }
+
+  .nodeDescription,
+  .breadcrumb,
+  .placeholder,
+  .metadataItem strong,
+  .parameterDetails,
+  .responseDescription {
+    color: #999;
+  }
+
+  .viewButton {
+    background: #1a365d;
+    color: #90caf9;
+  }
+
+  .viewButton:hover {
+    background: #1e4976;
+  }
+
+  .goButton {
+    background: #1b4332;
+    color: #81c784;
+  }
+
+  .goButton:hover {
+    background: #2d6a4f;
+  }
+
+  .apiStructure {
+    background: #1a1a1a;
+  }
+
+  .parameter,
+  .response {
+    background: #2a2a2a;
+  }
+
+  .contentHeader {
+    border-bottom-color: #333;
+  }
+
+  .modal {
+    background: #1a1a1a;
+  }
+
+  .modalOverlay {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .closeButton {
+    color: #999;
+  }
+
+  .closeButton:hover {
+    color: #fff;
+  }
+
+  .response {
+    background: #2a2a2a;
+  }
+
+  .responseCode[data-code="200"] {
+    background-color: #1e4620;
+    color: #98c699;
+  }
+
+  .responseCode[data-code="400"],
+  .responseCode[data-code="500"] {
+    background-color: #462020;
+    color: #c69898;
+  }
+
+  .responseDescription {
+    color: #adb5bd;
+  }
+
+  .responseExample {
+    background-color: #000000;
+    border-color: #2d2d2d;
+    color: #e9ecef;
+  }
+} 

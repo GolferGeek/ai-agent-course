@@ -1,7 +1,6 @@
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  min-height: 100vh;
+  background: #fff;
 }
 
 .intro {
@@ -108,18 +107,28 @@
 }
 
 .loading {
-  text-align: center;
-  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   color: #666;
 }
 
 .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #e00;
   text-align: center;
   padding: 2rem;
-  color: #e00;
 }
 
 @media (prefers-color-scheme: dark) {
+  .container {
+    background: #1a1a1a;
+  }
+
   .card {
     background: #1a1a1a;
     border-color: #333;

@@ -199,6 +199,64 @@
   white-space: pre-wrap;
 }
 
+.responseStructures {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+.responseStructure {
+  margin-bottom: 1.5rem;
+}
+
+.responseStructure:last-child {
+  margin-bottom: 0;
+}
+
+.responseStructure h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.statusCode {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+.statusCode:global([data-code="200"]) {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.statusCode:global([data-code="400"]),
+.statusCode:global([data-code="500"]) {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.statusDescription {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.responseExample {
+  margin: 0.5rem 0 0 0;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 @media (prefers-color-scheme: dark) {
   .container {
     background: #1a1a1a;
@@ -254,5 +312,30 @@
 
   .rawResponse summary {
     color: #999;
+  }
+
+  .responseStructures {
+    background-color: #1a1a1a;
+  }
+
+  .statusCode:global([data-code="200"]) {
+    background-color: #1e4620;
+    color: #98c699;
+  }
+
+  .statusCode:global([data-code="400"]),
+  .statusCode:global([data-code="500"]) {
+    background-color: #462020;
+    color: #c69898;
+  }
+
+  .statusDescription {
+    color: #adb5bd;
+  }
+
+  .responseExample {
+    background-color: #000000;
+    border-color: #2d2d2d;
+    color: #e9ecef;
   }
 } 
