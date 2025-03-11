@@ -91,7 +91,7 @@ export async function POST(request: Request) {
      * - temperature: Controls randomness (0 = deterministic, 1 = creative)
      */
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o",
       messages: [
         // System message defines the AI's behavior/persona
         { role: "system", content: "You are a helpful assistant." },

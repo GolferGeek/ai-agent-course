@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styles from './APIPlayground.module.css';
 
 interface Parameter {
@@ -28,6 +28,13 @@ interface APIMetadata {
       }>;
     };
   };
+}
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  thought?: string;
+  action?: string;
 }
 
 const renderResponseValue = (value: any): JSX.Element => {
@@ -66,8 +73,39 @@ const APIPlayground = ({ metadata }: { metadata: APIMetadata }) => {
   const [response, setResponse] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+  const isReactAPI = metadata.endpoint.includes('/api/langchain/react');
+
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const renderInput = (name: string, param: Parameter) => {
+    // For ReAct API, render a chat-style input
+    if (isReactAPI && name === 'message') {
+      return (
+        <input
+          ref={inputRef}
+          type="text"
+          value={formData[name] || ''}
+          onChange={(e) => setFormData({ ...formData, [name]: e.target.value })}
+          required={param.required}
+          placeholder="Type your message..."
+          className={styles.chatInput}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit(e);
+            }
+          }}
+        />
+      );
+    }
+
+    // Default input rendering for other APIs
     switch (param.type) {
       case 'string':
         if (param.enum) {
@@ -164,33 +202,10 @@ const APIPlayground = ({ metadata }: { metadata: APIMetadata }) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setResponse(null);
 
     try {
-      // Check if we have any file inputs
-      const hasFiles = Object.values(formData).some(value => value instanceof File);
-
-      let requestBody;
-      let headers: Record<string, string> = {};
-
-      if (hasFiles) {
-        // Use FormData for file uploads
-        const form = new FormData();
-        Object.entries(formData).forEach(([key, value]) => {
-          if (value instanceof File) {
-            form.append(key, value);
-          } else if (typeof value === 'object') {
-            form.append(key, JSON.stringify(value));
-          } else {
-            form.append(key, value);
-          }
-        });
-        requestBody = form;
-      } else {
-        // Use JSON for regular requests
-        requestBody = JSON.stringify(formData);
-        headers['Content-Type'] = 'application/json';
-      }
+      const requestBody = JSON.stringify(formData);
+      const headers = { 'Content-Type': 'application/json' };
 
       const response = await fetch(metadata.endpoint, {
         method: metadata.method,
@@ -205,6 +220,25 @@ const APIPlayground = ({ metadata }: { metadata: APIMetadata }) => {
       }
       
       setResponse(data);
+
+      // Handle chat-specific updates for ReAct API
+      if (isReactAPI && formData.message) {
+        const newUserMessage: ChatMessage = {
+          role: 'user',
+          content: formData.message
+        };
+
+        const newAssistantMessage: ChatMessage = {
+          role: 'assistant',
+          content: data.response,
+          thought: data.thought,
+          action: data.action
+        };
+
+        setChatHistory(prev => [...prev, newUserMessage, newAssistantMessage]);
+        setFormData({ message: '' }); // Clear input after sending
+        setTimeout(scrollToBottom, 100);
+      }
     } catch (err) {
       console.error('Error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -224,39 +258,54 @@ const APIPlayground = ({ metadata }: { metadata: APIMetadata }) => {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
+      {isReactAPI && chatHistory.length > 0 && (
+        <div className={styles.chatHistory}>
+          {chatHistory.map((msg, index) => (
+            <div key={index} className={`${styles.message} ${styles[msg.role]}`}>
+              <div className={styles.messageContent}>{msg.content}</div>
+              {msg.thought && (
+                <div className={styles.thought}>
+                  <strong>Thought:</strong> {msg.thought}
+                </div>
+              )}
+              {msg.action && (
+                <div className={styles.action}>
+                  <strong>Action:</strong> {msg.action}
+                </div>
+              )}
+            </div>
+          ))}
+          <div ref={chatEndRef} />
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className={`${styles.form} ${isReactAPI ? styles.chatForm : ''}`}>
         {Object.entries(metadata.parameters).map(([name, param]) => (
           <div key={name} className={styles.field}>
-            <label className={styles.label}>
-              {name}
-              {param.required && <span className={styles.required}>*</span>}
-            </label>
+            {!isReactAPI && (
+              <label className={styles.label}>
+                {name}
+                {param.required && <span className={styles.required}>*</span>}
+              </label>
+            )}
             <div className={styles.inputWrapper}>
               {renderInput(name, param)}
-              <small className={styles.description}>{param.description}</small>
+              {!isReactAPI && <small className={styles.description}>{param.description}</small>}
             </div>
           </div>
         ))}
 
         {error && <div className={styles.error}>{error}</div>}
 
-        <button type="submit" disabled={loading} className={styles.button}>
-          {loading ? 'Sending...' : 'Send Request'}
+        <button type="submit" disabled={loading} className={`${styles.button} ${isReactAPI ? styles.chatButton : ''}`}>
+          {loading ? 'Sending...' : isReactAPI ? 'Send' : 'Send Request'}
         </button>
       </form>
 
-      {response && (
+      {!isReactAPI && response && (
         <div className={styles.response}>
           <h3>Response</h3>
-          <div className={styles.responseContent}>
-            {renderResponseValue(response)}
-          </div>
-          <details className={styles.rawResponse}>
-            <summary>Raw Response</summary>
-            <pre>
-              {JSON.stringify(response, null, 2)}
-            </pre>
-          </details>
+          {renderResponseValue(response)}
         </div>
       )}
     </div>
