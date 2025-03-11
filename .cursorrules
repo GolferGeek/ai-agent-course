@@ -10,11 +10,10 @@
 /src
   /app                    # Next.js app directory
     /api                  # API routes and endpoints
-      /[...path]         # Dynamic API route handling
+      /[...path]         # Dynamic API route handling (API documentation/playground page)
       /{category}        # API category directories (generic, langchain, etc.)
         /discovery       # API metadata and discovery
         /route.ts       # API implementation
-    /pages              # Additional pages (non-API)
     /playground         # API playground pages
   /components           # Reusable React components
   /utils               # Utility functions and helpers
