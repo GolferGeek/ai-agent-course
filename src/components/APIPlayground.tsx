@@ -1,4 +1,6 @@
-import React, { useState, useRef } from 'react';
+import * as React from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { APIMetadata } from '@/utils/discovery';
 import styles from './APIPlayground.module.css';
 
 interface Parameter {
@@ -10,34 +12,9 @@ interface Parameter {
     type: string;
   };
   properties?: Record<string, Parameter>;
-  mimeTypes?: string[];
 }
 
-interface APIMetadata {
-  name: string;
-  endpoint: string;
-  description: string;
-  method: string;
-  parameters: Record<string, Parameter>;
-  responses: {
-    [key: string]: {
-      description: string;
-      content?: Record<string, {
-        type: string;
-        description: string;
-      }>;
-    };
-  };
-}
-
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-  thought?: string;
-  action?: string;
-}
-
-const renderResponseValue = (value: any): JSX.Element => {
+const renderResponseValue = (value: any) => {
   if (value === null) return <span className={styles.nullValue}>null</span>;
   if (typeof value === 'boolean') return <span className={styles.booleanValue}>{value.toString()}</span>;
   if (typeof value === 'number') return <span className={styles.numberValue}>{value}</span>;
@@ -68,184 +45,102 @@ const renderResponseValue = (value: any): JSX.Element => {
   return <span>{String(value)}</span>;
 };
 
-const APIPlayground = ({ metadata }: { metadata: APIMetadata }) => {
-  const [formData, setFormData] = useState<Record<string, any>>({});
+const LoadingSpinner = () => (
+  <div className={styles.spinnerContainer}>
+    <div className={styles.spinner}></div>
+    <div className={styles.spinnerText}>Waiting for response...</div>
+  </div>
+);
+
+interface APIPlaygroundProps {
+  metadata: APIMetadata;
+}
+
+const APIPlayground: React.FC<APIPlaygroundProps> = ({ metadata }) => {
+  const formRef = useRef<HTMLFormElement>(null);
   const [response, setResponse] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const [stateValues, setStateValues] = useState<Record<string, any>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isReactAPI = metadata.endpoint.includes('/api/langchain/react');
-
-  const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const renderInput = (name: string, param: Parameter) => {
-    // For ReAct API, render a chat-style input
-    if (isReactAPI && name === 'message') {
-      return (
-        <input
-          ref={inputRef}
-          type="text"
-          value={formData[name] || ''}
-          onChange={(e) => setFormData({ ...formData, [name]: e.target.value })}
-          required={param.required}
-          placeholder="Type your message..."
-          className={styles.chatInput}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit(e);
-            }
-          }}
-        />
-      );
+  // Clear form on mount
+  useEffect(() => {
+    if (formRef.current) {
+      formRef.current.reset();
     }
+  }, []);
 
-    // Default input rendering for other APIs
-    switch (param.type) {
-      case 'string':
-        if (param.enum) {
-          return (
-            <select
-              value={formData[name] || ''}
-              onChange={(e) => setFormData({ ...formData, [name]: e.target.value })}
-              required={param.required}
-              className={styles.select}
-            >
-              <option value="">Select {name}</option>
-              {param.enum.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          );
-        }
-        return (
-          <input
-            type="text"
-            value={formData[name] || ''}
-            onChange={(e) => setFormData({ ...formData, [name]: e.target.value })}
-            required={param.required}
-            placeholder={param.description}
-            className={styles.input}
-          />
-        );
-
-      case 'array':
-        return (
-          <textarea
-            value={formData[name] ? JSON.stringify(formData[name], null, 2) : ''}
-            onChange={(e) => {
-              try {
-                const value = JSON.parse(e.target.value);
-                setFormData({ ...formData, [name]: value });
-                setError(null);
-              } catch (err) {
-                setError('Invalid JSON array format');
-              }
-            }}
-            required={param.required}
-            placeholder={`Enter JSON array for ${name}`}
-            className={styles.textarea}
-          />
-        );
-
-      case 'object':
-        return (
-          <textarea
-            value={formData[name] ? JSON.stringify(formData[name], null, 2) : ''}
-            onChange={(e) => {
-              try {
-                const value = JSON.parse(e.target.value);
-                setFormData({ ...formData, [name]: value });
-                setError(null);
-              } catch (err) {
-                setError('Invalid JSON object format');
-              }
-            }}
-            required={param.required}
-            placeholder={`Enter JSON object for ${name}`}
-            className={styles.textarea}
-          />
-        );
-
-      case 'file':
-        return (
-          <input
-            type="file"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file && param.mimeTypes?.includes(file.type)) {
-                setFormData({ ...formData, [name]: file });
-                setError(null);
-              } else {
-                setError(`Invalid file type. Allowed types: ${param.mimeTypes?.join(', ')}`);
-              }
-            }}
-            accept={param.mimeTypes?.join(',')}
-            required={param.required}
-            className={styles.fileInput}
-          />
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  // Clear response, error, and state values when metadata (selected API) changes
+  useEffect(() => {
+    setResponse(null);
     setError(null);
+    setStateValues({});
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+  }, [metadata.endpoint]);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    if (!formRef.current) return;
+    const formData = new FormData(formRef.current);
+    const requestData: Record<string, any> = {};
+
+    // Add form parameters
+    for (const [key, value] of formData.entries()) {
+      requestData[key] = value;
+    }
+
+    // Add persisted state values
+    if (metadata.state) {
+      Object.entries(metadata.state).forEach(([key, stateVar]) => {
+        if (stateVar.persist && stateValues[key]) {
+          requestData[key] = stateValues[key];
+        }
+      });
+    }
 
     try {
-      const requestBody = JSON.stringify(formData);
-      const headers = { 'Content-Type': 'application/json' };
-
-      const response = await fetch(metadata.endpoint, {
-        method: metadata.method,
-        body: metadata.method === 'GET' ? undefined : requestBody,
-        headers
+      const res = await fetch(metadata.endpoint, {
+        method: metadata.method || 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
       });
 
-      const data = await response.json();
-      
-      if (!response.ok) {
+      const data = await res.json();
+
+      if (!res.ok) {
         throw new Error(data.error || 'An error occurred');
       }
-      
+
       setResponse(data);
 
-      // Handle chat-specific updates for ReAct API
-      if (isReactAPI && formData.message) {
-        const newUserMessage: ChatMessage = {
-          role: 'user',
-          content: formData.message
-        };
-
-        const newAssistantMessage: ChatMessage = {
-          role: 'assistant',
-          content: data.response,
-          thought: data.thought,
-          action: data.action
-        };
-
-        setChatHistory(prev => [...prev, newUserMessage, newAssistantMessage]);
-        setFormData({ message: '' }); // Clear input after sending
-        setTimeout(scrollToBottom, 100);
+      // Update state values from response
+      if (metadata.state) {
+        const newStateValues = { ...stateValues };
+        Object.entries(metadata.state).forEach(([key, stateVar]) => {
+          if (data[stateVar.key]) {
+            newStateValues[key] = data[stateVar.key];
+          }
+        });
+        setStateValues(newStateValues);
       }
+
+      // Clear form after successful submission
+      formRef.current.reset();
     } catch (err) {
-      console.error('Error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
+
+  const hasState = metadata.state && Object.keys(metadata.state).length > 0;
 
   return (
     <div className={styles.container}>
@@ -258,51 +153,37 @@ const APIPlayground = ({ metadata }: { metadata: APIMetadata }) => {
         </div>
       </div>
 
-      {isReactAPI && chatHistory.length > 0 && (
-        <div className={styles.chatHistory}>
-          {chatHistory.map((msg, index) => (
-            <div key={index} className={`${styles.message} ${styles[msg.role]}`}>
-              <div className={styles.messageContent}>{msg.content}</div>
-              {msg.thought && (
-                <div className={styles.thought}>
-                  <strong>Thought:</strong> {msg.thought}
-                </div>
-              )}
-              {msg.action && (
-                <div className={styles.action}>
-                  <strong>Action:</strong> {msg.action}
-                </div>
-              )}
-            </div>
-          ))}
-          <div ref={chatEndRef} />
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className={`${styles.form} ${isReactAPI ? styles.chatForm : ''}`}>
-        {Object.entries(metadata.parameters).map(([name, param]) => (
-          <div key={name} className={styles.field}>
-            {!isReactAPI && (
-              <label className={styles.label}>
-                {name}
-                {param.required && <span className={styles.required}>*</span>}
-              </label>
-            )}
+      <form ref={formRef} onSubmit={handleSubmit} className={styles.form}>
+        {metadata.parameters && Object.entries(metadata.parameters).map(([key, param]) => (
+          <div key={key} className={styles.field}>
+            <label className={styles.label}>
+              {key}
+              {param.required && <span className={styles.required}>*</span>}
+            </label>
             <div className={styles.inputWrapper}>
-              {renderInput(name, param)}
-              {!isReactAPI && <small className={styles.description}>{param.description}</small>}
+              <input
+                type="text"
+                id={key}
+                name={key}
+                required={param.required}
+                className={styles.input}
+                placeholder={param.description}
+              />
+              <small className={styles.description}>{param.description}</small>
             </div>
           </div>
         ))}
 
         {error && <div className={styles.error}>{error}</div>}
 
-        <button type="submit" disabled={loading} className={`${styles.button} ${isReactAPI ? styles.chatButton : ''}`}>
-          {loading ? 'Sending...' : isReactAPI ? 'Send' : 'Send Request'}
+        <button type="submit" className={styles.button} disabled={isLoading}>
+          {isLoading ? 'Sending...' : 'Send'}
         </button>
       </form>
 
-      {!isReactAPI && response && (
+      {isLoading && <LoadingSpinner />}
+
+      {response && !isLoading && (
         <div className={styles.response}>
           <h3>Response</h3>
           {renderResponseValue(response)}

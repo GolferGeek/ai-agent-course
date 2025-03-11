@@ -5,7 +5,7 @@ import OpenAI from 'openai';
  * OpenAI Chat API Route
  * 
  * This file implements a Next.js API route that communicates with OpenAI's API.
- * It receives prompts from the client and returns AI-generated responses.
+ * It receives messages from the client and returns AI-generated responses.
  * 
  * The route is part of Next.js App Router API convention, where:
  * - Files named 'route.js' or 'route.ts' in the app directory define API endpoints
@@ -16,7 +16,7 @@ import OpenAI from 'openai';
  * 
  * Request Format:
  * - Method: POST
- * - Body: JSON object with a 'prompt' field
+ * - Body: JSON object with a 'message' field
  * 
  * Response Format:
  * - Success: JSON object with a 'response' field containing the AI's response
@@ -53,9 +53,9 @@ export async function OPTIONS() {
  * POST request handler for the /api/generic/chat endpoint
  * 
  * This function:
- * 1. Extracts the prompt from the request body
- * 2. Validates that a prompt was provided
- * 3. Calls the OpenAI API with the prompt
+ * 1. Extracts the message from the request body
+ * 2. Validates that a message was provided
+ * 3. Calls the OpenAI API with the message
  * 4. Returns the AI's response
  * 
  * @param request - The incoming HTTP request object
@@ -70,14 +70,14 @@ export async function POST(request: Request) {
     
     // Parse the JSON body
     const body = JSON.parse(requestText);
-    const { prompt } = body;
+    const { message } = body;
     
-    console.log('Prompt:', prompt);
+    console.log('Message:', message);
 
-    // Validate that a prompt was provided
-    if (!prompt) {
+    // Validate that a message was provided
+    if (!message) {
       return NextResponse.json(
-        { error: 'Prompt is required' },
+        { error: 'Message is required' },
         { status: 400 }
       );
     }
@@ -91,12 +91,12 @@ export async function POST(request: Request) {
      * - temperature: Controls randomness (0 = deterministic, 1 = creative)
      */
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4",
       messages: [
         // System message defines the AI's behavior/persona
         { role: "system", content: "You are a helpful assistant." },
-        // User message contains the prompt from the client
-        { role: "user", content: prompt }
+        // User message contains the message from the client
+        { role: "user", content: message }
       ],
       temperature: 0.7, // Balanced between deterministic and creative
     });

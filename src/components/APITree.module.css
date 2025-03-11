@@ -291,6 +291,20 @@
   color: #333;
 }
 
+.stateInfo {
+  margin-bottom: 1.5rem;
+}
+
+.statePersist {
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: #0070f3;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
 @media (prefers-color-scheme: dark) {
   .tree {
     border-right-color: #333;
@@ -386,5 +400,9 @@
     background-color: #000000;
     border-color: #2d2d2d;
     color: #e9ecef;
+  }
+
+  .statePersist {
+    background: #3291ff;
   }
 } 

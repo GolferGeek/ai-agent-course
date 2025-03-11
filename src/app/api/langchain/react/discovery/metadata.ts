@@ -12,6 +12,14 @@ const metadata: APIMetadata = {
       description: "The message to send to the AI"
     }
   },
+  state: {
+    history: {
+      type: "array",
+      description: "The conversation history between the user and AI",
+      key: "history",
+      persist: true
+    }
+  },
   responses: {
     200: {
       description: "Successful response",
@@ -27,6 +35,10 @@ const metadata: APIMetadata = {
         action: {
           type: "string",
           description: "The action taken by the AI"
+        },
+        history: {
+          type: "array",
+          description: "The updated conversation history"
         }
       }
     },

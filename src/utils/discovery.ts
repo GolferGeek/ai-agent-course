@@ -13,12 +13,20 @@ export interface Parameter {
   mimeTypes?: string[];
 }
 
+export interface StateVariable {
+  type: string;
+  description: string;
+  key: string;  // The key in the response that contains this state value
+  persist: boolean;  // Whether to persist this value between requests
+}
+
 export interface APIMetadata {
   name: string;
   endpoint: string;
   description: string;
   method: string;
   parameters: Record<string, Parameter>;
+  state?: Record<string, StateVariable>;  // New state management section
   responses: {
     [key: string]: {
       description: string;

@@ -3,22 +3,23 @@ import { APIMetadata } from '@/utils/discovery';
 const metadata: APIMetadata = {
   name: "Generic Chat API",
   endpoint: "/api/generic/chat",
-  description: "A simple chat interface that processes messages using OpenAI's API",
+  description: "A simple chat interface that processes messages using OpenAI's API (stateless)",
   method: "POST",
   parameters: {
-    prompt: {
+    message: {
       type: "string",
       required: true,
       description: "The message to send to the AI"
     }
   },
+  state: {},  // This API is stateless - each request is processed independently
   responses: {
     200: {
       description: "Successful response",
       content: {
         response: {
           type: "string",
-          description: "The AI's response to the prompt"
+          description: "The AI's response to the message"
         }
       }
     },
