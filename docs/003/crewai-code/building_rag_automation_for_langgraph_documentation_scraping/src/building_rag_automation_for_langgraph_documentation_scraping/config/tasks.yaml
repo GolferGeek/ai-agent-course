@@ -1,0 +1,45 @@
+---
+map_documentation_structure:
+  description: Create a comprehensive map of the documentation structure at {base_url},
+    identifying all relevant sections including getting started guides, API references,
+    and code examples. Generate a structured outline of the documentation hierarchy.
+  expected_output: A detailed map of the documentation structure from {base_url},
+    including categorized lists of pages for getting started guides, API references,
+    and code examples, with their relationships and hierarchy clearly defined.
+  async_execution: false
+  agent: doc_navigator
+extract_documentation_content:
+  description: Extract all relevant content from the identified pages at {base_url},
+    including main content, code examples, API references, and any supporting information.
+    Ensure proper extraction of code blocks and technical specifications.
+  expected_output: Raw extracted content from all identified documentation pages,
+    including properly formatted code blocks, API specifications, and conceptual explanations,
+    organized by their respective sections.
+  async_execution: false
+  agent: content_scraper
+  context:
+  - map_documentation_structure
+process_documentation:
+  description: Transform the raw extracted content into well-structured markdown files.
+    Organize content by topic, ensure proper formatting of code examples, and create
+    clear navigation structure. Save processed files to {output_directory}.
+  expected_output: A collection of well-organized markdown files in {output_directory},
+    with proper formatting, clear structure, and working internal links. Each file
+    should contain relevant conceptual explanations, API details, and code examples.
+  async_execution: false
+  agent: content_processor
+  context:
+  - extract_documentation_content
+review_documentation_quality:
+  description: Review all processed documentation files for quality, completeness,
+    and accuracy. Verify that all content from {base_url} has been properly captured
+    and formatted. Check for broken links, formatting issues, and ensure consistency
+    across all files.
+  expected_output: A quality assurance report detailing the review of all documentation
+    files, including verification of content accuracy, formatting consistency, and
+    working links. Any identified issues should be documented with specific locations
+    and recommended fixes.
+  async_execution: false
+  agent: quality_reviewer
+  context:
+  - process_documentation
